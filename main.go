@@ -101,6 +101,10 @@ func Commit_Branch_File(repoName string, path string, content string, author str
 	return commitFileImpl(repoName, path, content, author, message, email, branch)
 }
 
+// Shared implementations need to be unexported since PLGO will change the
+// return type to Datum meaning we cannot call any exported method in the main
+// package internally.
+
 func commitFileImpl(repoName string, path string, content string, author string, message string, email string, branch string) []string {
 	logger := plgo.NewNoticeLogger("konfigraf ", log.Ltime)
 	require(logger, repoName, "Repository name")
@@ -133,10 +137,6 @@ func Get_Branch_File(repoName string, path string, branch string) string {
 	return getFileImpl(repoName, path, branch)
 }
 
-// Shared implementations need to be unexported since PLGO will change the
-// return type to Datum meaning we cannot call any exported method in the main
-// package internally.
-
 func getFileImpl(repoName string, path string, branch string) string {
 	logger := plgo.NewNoticeLogger("konfigraf ", log.Ltime)
 	require(logger, repoName, "Repository name")
@@ -157,6 +157,37 @@ func getFileImpl(repoName string, path string, branch string) string {
 	}
 
 	return info.Contents
+}
+
+// Lists files from a specific path of the master branch
+func List_Files(repoName string, path string) []string {
+	return listFilesImpl(repoName, path, "master")
+}
+
+// Lists files from a specific path of the master branch
+func List_Branch_Files(repoName string, path string, branch string) []string {
+	return listFilesImpl(repoName, path, branch)
+}
+
+func listFilesImpl(repoName string, path string, branch string) []string {
+	logger := plgo.NewNoticeLogger("konfigraf ", log.Ltime)
+	require(logger, repoName, "Repository name")
+	require(logger, branch, "Branch name")
+
+	db, err := plgo.Open()
+	if err != nil {
+		logger.Fatalf("Cannot open DB: %s", err)
+	}
+	defer db.Close()
+	database := newProxy(db)
+
+	files, err := service.GetFileNames(database, repoName, branch, path)
+
+	if err != nil {
+		logger.Fatalf("Error: %s", err)
+	}
+
+	return files
 }
 
 // Validation method for strings

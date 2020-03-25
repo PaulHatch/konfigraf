@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"gopkg.in/src-d/go-git.v4/plumbing/filemode"
+
 	"gopkg.in/src-d/go-git.v4/plumbing"
 
 	"github.com/paulhatch/konfigraf/proxy"
@@ -240,6 +242,8 @@ func GetFile(
 	branch string,
 	path string) (*FileInfo, error) {
 
+	path = strings.TrimPrefix(path, "/")
+
 	repo, err := openRepo(db, false, name)
 	if err != nil {
 		return nil, err
@@ -282,6 +286,8 @@ func GetFileNames(
 	branch string,
 	path string) ([]string, error) {
 
+	path = strings.Trim(path, "/")
+
 	repo, err := openRepo(db, false, name)
 	if err != nil {
 		return nil, err
@@ -305,7 +311,12 @@ func GetFileNames(
 
 	var result []string
 	for _, entry := range tree.Entries {
-		result = append(result, entry.Name)
+		if entry.Mode == filemode.Dir {
+			result = append(result, entry.Name+"/")
+		} else {
+			result = append(result, entry.Name)
+		}
+
 	}
 
 	return result, nil
@@ -421,6 +432,8 @@ func UpdateFile(
 	repoHash string,
 	branch string) (*FileInfo, error) {
 
+	path = strings.TrimPrefix(path, "/")
+
 	repo, err := openRepo(db, true, name)
 
 	if err != nil {
@@ -489,6 +502,8 @@ func DeleteFile(
 	itemHash string,
 	repoHash string,
 	branch string) (*FileInfo, error) {
+
+	path = strings.TrimPrefix(path, "/")
 
 	repo, err := openRepo(db, true, name)
 
@@ -563,6 +578,8 @@ func DiffFile(
 	path string,
 	from string,
 	to string) (string, error) {
+
+	path = strings.TrimPrefix(path, "/")
 
 	repo, err := openRepo(db, false, name)
 	if err != nil {
