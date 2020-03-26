@@ -20,7 +20,7 @@ SELECT commit_file('my-repository', 'app/config.json','{"value": [1,2,3]}','John
 SELECT get_file('my-repository','app/config.json') AS config
 
 -- List files for a given path as an array of strings
-SELECT get_file('my-repository','app/');
+SELECT list_files('my-repository','app');
 
 -- Since these are just SQL functions, they can be combined with queries
 
