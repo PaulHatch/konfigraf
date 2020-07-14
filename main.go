@@ -6,7 +6,7 @@ import (
 	"github.com/paulhatch/konfigraf/proxy"
 	"github.com/paulhatch/konfigraf/service"
 
-	"github.com/microo8/plgo"
+	"github.com/paulhatch/plgo"
 )
 
 // Creates a new repository and returns the repository ID.

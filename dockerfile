@@ -33,7 +33,7 @@ ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 
 # Install PLGO
-RUN go get -u github.com/microo8/plgo/plgo
+RUN go get -u github.com/paulhatch/plgo/plgo
 
 WORKDIR $GOPATH
 
