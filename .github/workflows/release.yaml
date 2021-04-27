@@ -18,10 +18,10 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
-          go-version: ‘1.16.3s’
+          go-version: "1.16.3"
       - name: Install Postgres Tools
         run: |
-          echo "deb http://apt.postgresql.org/pub/repos/apt bionic-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
-          curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-          apt-get update
-          apt-get -y install postgresql-server-dev-13
+          sudo echo "deb http://apt.postgresql.org/pub/repos/apt bionic-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
+          sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+          sudo apt-get update
+          sudo apt-get -y install postgresql-server-dev-13
