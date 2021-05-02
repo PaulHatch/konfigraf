@@ -1,0 +1,35 @@
+{
+    "name": "konfigraf",
+    "abstract": "Git Based Application Configuration",
+    "version": "0.0.0",
+    "maintainer": "Paul Hatcherian",
+    "license": "MIT",
+    "meta-spec": {
+        "version": "1.0.0",
+        "url": "http://pgxn.org/meta/spec.txt"
+    },
+    "tags": [
+        "git",
+        "config",
+        "configuration"
+    ],
+    "resources": {
+        "repository": {
+            "url": "git://github.com/paulhatch/konfigraf.git",
+            "web": "http://github.com/paulhatch/konfigraf/",
+            "type": "git"
+        }
+    },
+    "prereqs": {
+        "runtime": {
+            "requires": {
+                "PostgreSQL": "12.0.0"
+            }
+        },
+        "test": {
+            "requires": {
+                "plpgsql": 0
+            }
+        }
+    }
+}

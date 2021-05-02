@@ -4,19 +4,18 @@ import (
 	"archive/tar"
 	"bytes"
 	"fmt"
+	"io"
 	"regexp"
 	"strings"
 	"time"
-
-	"github.com/go-git/go-git/v5/plumbing/filemode"
-
-	"github.com/go-git/go-git/v5/plumbing"
 
 	"github.com/paulhatch/konfigraf/proxy"
 	"github.com/paulhatch/konfigraf/sqlstore"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
+	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/filemode"
 	"github.com/go-git/go-git/v5/plumbing/format/diff"
 	"github.com/go-git/go-git/v5/plumbing/object"
 
@@ -284,7 +283,14 @@ func GetFileNames(
 	db *proxy.DB,
 	name string,
 	branch string,
-	path string) ([]string, error) {
+	searchPath string) ([]string, error) {
+
+	path := searchPath
+
+	includeSubfolders := strings.HasSuffix(path, "*")
+	if includeSubfolders {
+		path = path[:len(path)-1]
+	}
 
 	path = strings.Trim(path, "/")
 
@@ -309,6 +315,10 @@ func GetFileNames(
 		}
 	}
 
+	if includeSubfolders {
+		return enumerateTree(tree, path)
+	}
+
 	var result []string
 	for _, entry := range tree.Entries {
 		if entry.Mode == filemode.Dir {
@@ -316,9 +326,35 @@ func GetFileNames(
 		} else {
 			result = append(result, entry.Name)
 		}
-
 	}
 
+	return result, nil
+}
+
+func enumerateTree(tree *object.Tree, root string) ([]string, error) {
+	var result []string
+	for _, entry := range tree.Entries {
+		var path string
+		if len(root) > 0 {
+			path = fmt.Sprintf("%s/%s", root, entry.Name)
+		} else {
+			path = entry.Name
+		}
+
+		if entry.Mode == filemode.Dir {
+			tree, err := tree.Tree(entry.Name)
+			if err != nil {
+				return nil, errInvalid
+			}
+			files, err := enumerateTree(tree, path)
+			if err != nil {
+				return nil, errInvalid
+			}
+			result = append(result, files...)
+		} else {
+			result = append(result, path)
+		}
+	}
 	return result, nil
 }
 
@@ -620,6 +656,77 @@ func DiffFile(
 
 	return result.String(), nil
 }
+
+func GetHistory(
+	db *proxy.DB,
+	name string,
+	branch string,
+	since *time.Time,
+	until *time.Time,
+	file *string) ([]string, error) {
+	repo, err := openRepo(db, true, name)
+	if err != nil {
+		return nil, err
+	}
+
+	hash, err := resolveHashFromName(repo, branch)
+	if err != nil {
+		return nil, err
+	}
+
+	var options = git.LogOptions{
+		From: hash,
+	}
+
+	if since != nil && !since.IsZero() {
+		options.Since = since
+	}
+	if until != nil && !until.IsZero() {
+		options.Until = until
+	}
+	if file != nil && len(*file) > 0 {
+		options.FileName = file
+	}
+
+	entries, err := repo.Log(&options)
+	if err != nil {
+		return nil, err
+	}
+	defer entries.Close()
+
+	var result []string
+
+	for {
+		entry, err := entries.Next()
+		if err == io.EOF {
+			return result, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, fmt.Sprintf("{\"message\":%q,\"author\":%q,\"email\":%q,\"date\":%q,\"hash\":%q}", entry.Message, entry.Author.Name, entry.Author.Email, entry.Author.When.Format(time.RFC3339), entry.Hash))
+	}
+}
+
+// func Merge(
+// 	db *proxy.DB,
+// 	name string,
+// 	branch string,
+// 	since *time.Time,
+// 	until *time.Time,
+// 	file *string) ([]string, error) {
+// 	repo, err := openRepo(db, true, name)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	hash, err := resolveHashFromName(repo, branch)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	b, _ := repo.
+// }
 
 // Converts the branch name provided into a reference name
 func refName(n string) plumbing.ReferenceName {

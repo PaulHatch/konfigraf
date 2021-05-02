@@ -7,6 +7,7 @@ jobs:
   build:
     name: Build Extension
     runs-on: ubuntu-20.04
+    container: ghcr.io/paulhatch/plgo:1.4.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -15,13 +16,8 @@ jobs:
       - name: Version
         id: version
         uses: paulhatch/semantic-version@v4.0.2
-      - name: Setup Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: "1.16.3"
-      - name: Install Postgres Tools
+      - name: Build Extension
         run: |
-          sudo echo "deb http://apt.postgresql.org/pub/repos/apt bionic-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
-          sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-          sudo apt-get update
-          sudo apt-get -y install postgresql-server-dev-13
+          plgo -x -v $VERSION -d "$(jq -r '.abstract' META.json)" .
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
