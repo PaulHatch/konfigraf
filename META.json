@@ -1,6 +1,6 @@
 {
     "name": "konfigraf",
-    "abstract": "Git Based Application Configuration",
+    "abstract": "Git based application configuration",
     "version": "0.0.0",
     "maintainer": "Paul Hatcherian",
     "license": "MIT",
