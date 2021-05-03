@@ -18,9 +18,9 @@ jobs:
         uses: paulhatch/semantic-version@v4.0.2
       - name: Build Extension
         run: |
-          plgo -x -v $VERSION -d "$(jq -r '.abstract' META.json)" .
+          plgo -x -v $VERSION -d "Git based application configuration" .
           cp ./META.json ./build/
-          cp ./extensions.sql ./build/
+          cp ./extension.sql ./build/
         env:
           VERSION: ${{ steps.version.outputs.version }}
       - name: Archive production artifacts
