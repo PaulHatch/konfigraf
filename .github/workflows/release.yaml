@@ -20,7 +20,7 @@ jobs:
         run: |
           plgo -x -v $VERSION -d "$(jq -r '.abstract' META.json)" .
           cp ./extension.sql ./build/
-          export FILES=$(echo -n $(ls *.sql) |  jq --raw-input --compact-output --slurp 'split(" ")')     
+          export FILES=$(echo -n $(ls ./build/*.sql) |  jq --raw-input --compact-output --slurp 'split(" ")')     
           jq \
             --arg version $VERSION \
             --argjson files $FILES \
