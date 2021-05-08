@@ -20,13 +20,6 @@ import (
 
 var ErrRefHasChanged = fmt.Errorf("reference has changed concurrently")
 
-const (
-	urlField      = "url"
-	referencesSet = "reference"
-	configSet     = "config"
-	typesSet      = "types"
-)
-
 type Storage struct {
 	db           *proxy.DB
 	repositoryID int
@@ -199,7 +192,7 @@ func (s *Storage) HasEncodedObject(h plumbing.Hash) error {
 
 // EncodedObjectSize returns the plaintext size of the encoded object.
 func (s *Storage) EncodedObjectSize(plumbing.Hash) (int64, error) {
-	return 0, fmt.Errorf("Not implemented")
+	return 0, fmt.Errorf("not implemented")
 }
 
 type EncodedObjectIter struct {
