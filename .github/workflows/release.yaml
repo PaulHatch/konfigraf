@@ -7,7 +7,7 @@ jobs:
   build:
     name: Build Extension
     runs-on: ubuntu-20.04
-    container: ghcr.io/paulhatch/plgo:1.4.1
+    container: ghcr.io/paulhatch/plgo:1.4.2
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -18,9 +18,14 @@ jobs:
         uses: paulhatch/semantic-version@v4.0.2
       - name: Build Extension
         run: |
-          plgo -x -v $VERSION -d "Git based application configuration" .
-          cp ./META.json ./build/
+          plgo -x -v $VERSION -d "$(jq -r '.abstract' META.json)" .
           cp ./extension.sql ./build/
+          export FILES=$(echo -n $(ls *.sql) |  jq --raw-input --compact-output --slurp 'split(" ")')     
+          jq \
+            --arg version $VERSION \
+            --argjson files $FILES \
+            '.version = $version | .provides.konfigraf.file = $files' \
+            META.json >> ./build/META.json
         env:
           VERSION: ${{ steps.version.outputs.version }}
       - name: Archive production artifacts
