@@ -19,7 +19,7 @@ jobs:
       - name: Build Extension
         run: |
           plgo -x -v $VERSION -d "$(jq -r '.abstract' META.json)" .
-          cat extension.sql >> ./build/konfigraf--*.sql
+          cat extension.sql >> ./build/konfigraf--${VERSION}.sql
           export FILES=$(echo -n $(ls ./build/*.sql) |  jq --raw-input --compact-output --slurp 'split(" ")')     
           jq \
             --arg version $VERSION \
