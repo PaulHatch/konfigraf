@@ -7,7 +7,7 @@ jobs:
   build:
     name: Build Extension
     runs-on: ubuntu-20.04
-    container: ghcr.io/paulhatch/plgo:1.4.2
+    container: ghcr.io/paulhatch/plgo:1.4.3
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -20,7 +20,7 @@ jobs:
         run: |
           plgo -x -v $VERSION -d "$(jq -r '.abstract' META.json)" .
           cat extension.sql >> ./build/konfigraf--${VERSION}.sql
-          export FILES=$(echo -n $(ls ./build/*.sql) |  jq --raw-input --compact-output --slurp 'split(" ")')     
+          export FILES=$(echo -n $(ls ./build/*.sql) |  jq --raw-input --compact-output --slurp 'split(" ")')
           jq \
             --arg version $VERSION \
             --argjson files $FILES \
