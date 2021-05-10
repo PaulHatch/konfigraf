@@ -4,6 +4,7 @@
     "version": "1.0.0",
     "maintainer": "Paul Hatcherian",
     "license": "mit",
+    "release_status": "unstable",
     "meta-spec": {
         "version": "1.0.0",
         "url": "http://pgxn.org/meta/spec.txt"
