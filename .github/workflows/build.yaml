@@ -1,5 +1,8 @@
-name: Release
-on: workflow_dispatch
+name: Build and Test
+on:
+  push:
+    branches:
+      - "master"
 jobs:
   build:
     name: Build Extension
@@ -30,20 +33,3 @@ jobs:
         with:
           name: extension
           path: build
-  release:
-    name: Bundle and Publish
-    runs-on: ubuntu-20.04
-    container: pg-build-test
-    needs: build
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: extension
-      - name: Bundle
-        run: pgxn-bundle
-      - name: Release on PGXN
-        run: pgxn-release
-        env:
-          PGXN_USERNAME: ${{ secrets.PGXN_USERNAME }}
-          PGXN_PASSWORD: ${{ secrets.PGXN_PASSWORD }}
