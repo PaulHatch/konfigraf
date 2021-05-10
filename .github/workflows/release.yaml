@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - "master"
+    tags:
+      - "*"
 jobs:
   build:
     name: Build Extension
@@ -28,8 +30,25 @@ jobs:
             META.json >> ./build/META.json
         env:
           VERSION: ${{ steps.version.outputs.version }}
-      - name: Archive production artifacts
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: extension
           path: build
+  release:
+    name: Bundle and Publish
+    runs-on: ubuntu-20.04
+    container: pg-build-test
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: extension
+      - name: Bundle
+        run: pgxn-bundle
+      - name: Release on PGXN
+        run: pgxn-release
+        env:
+          PGXN_USERNAME: ${{ secrets.PGXN_USERNAME }}
+          PGXN_PASSWORD: ${{ secrets.PGXN_PASSWORD }}
