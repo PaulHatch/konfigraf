@@ -24,7 +24,7 @@ jobs:
           jq \
             --arg version $VERSION \
             --argjson files $FILES \
-            '.version = $version | .provides.konfigraf.file = $files' \
+            '.version = $version | .provides.konfigraf.version = $version | .provides.konfigraf.file = $files' \
             META.json >> ./build/META.json
         env:
           VERSION: ${{ steps.version.outputs.version }}
