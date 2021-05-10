@@ -41,10 +41,8 @@ jobs:
         with:
           name: extension
       - name: Bundle
-        working-directory: extension
         run: pgxn-bundle
       - name: Release on PGXN
-        working-directory: extension
         run: pgxn-release
         env:
           PGXN_USERNAME: ${{ secrets.PGXN_USERNAME }}
