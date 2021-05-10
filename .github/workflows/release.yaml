@@ -33,7 +33,7 @@ jobs:
   release:
     name: Bundle and Publish
     runs-on: ubuntu-20.04
-    container: pg-build-test
+    container: pgxn/pgxn-tools
     needs: build
     steps:
       - name: Download Artifacts
@@ -41,8 +41,10 @@ jobs:
         with:
           name: extension
       - name: Bundle
+        working-directory: extension
         run: pgxn-bundle
       - name: Release on PGXN
+        working-directory: extension
         run: pgxn-release
         env:
           PGXN_USERNAME: ${{ secrets.PGXN_USERNAME }}
