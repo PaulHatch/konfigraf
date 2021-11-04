@@ -1,7 +1,7 @@
 <img src="https://www.konfigraf.com/logo.png" title="" alt="Konfigraf" width="200" height="174">
 
 [![PGXN version](https://badge.fury.io/pg/konfigraf.svg)](https://badge.fury.io/pg/konfigraf)
-[![Build](https://github.com/paulhatch/konfigraf/actions/workflows/build.yaml/badge.svg](https://github.com/paulhatch/konfigraf/actions)
+[![Build](https://github.com/paulhatch/konfigraf/actions/workflows/build.yaml/badge.svg)](https://github.com/paulhatch/konfigraf/actions)
 
 _Git Based Application Configuration_
 
