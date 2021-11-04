@@ -1,5 +1,8 @@
 <img src="https://www.konfigraf.com/logo.png" title="" alt="Konfigraf" width="200" height="174">
 
+[![PGXN version](https://badge.fury.io/pg/konfigraf.svg)](https://badge.fury.io/pg/konfigraf)
+[![Build Status](https://github.com/paulhatch/konfigraf/workflows/CI/badge.svg)](https://github.com/paulhatch/konfigraf/actions)
+
 _Git Based Application Configuration_
 
 Konfigraf is a Postgres extension that allows you to store and manipulate data
@@ -31,3 +34,11 @@ SELECT commit_file('my-repository', 'app/config.json',get_file('my-repository','
 SELECT get_file('my-repository','app/config.json')::jsonb->'max' AS maximum
 
 ```
+
+## Merge
+
+
+## Performance
+
+Konfigraf is designed primarily for use in the context of a user updating
+application configuration, generally a low-volume operation.
