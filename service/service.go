@@ -708,25 +708,29 @@ func GetHistory(
 	}
 }
 
-// func Merge(
-// 	db *proxy.DB,
-// 	name string,
-// 	branch string,
-// 	since *time.Time,
-// 	until *time.Time,
-// 	file *string) ([]string, error) {
-// 	repo, err := openRepo(db, true, name)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func GetBranches(
+	db *proxy.DB,
+	name string) ([]string, error) {
+	repo, err := openRepo(db, false, name)
+	if err != nil {
+		return nil, err
+	}
 
-// 	hash, err := resolveHashFromName(repo, branch)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	branches, err := repo.Branches()
+	if err != nil {
+		return nil, err
+	}
 
-// 	b, _ := repo.
-// }
+	var result []string
+	for {
+		b, err := branches.Next()
+		if err != nil {
+			return result, nil
+
+		}
+		result = append(result, b.String())
+	}
+}
 
 // Converts the branch name provided into a reference name
 func refName(n string) plumbing.ReferenceName {

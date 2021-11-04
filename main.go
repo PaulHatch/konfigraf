@@ -222,6 +222,27 @@ func getHistoryImpl(repoName string, branch string, since *time.Time, until *tim
 	return history
 }
 
+// Lists branches for this repository
+func ListBranches(repoName string) []string {
+	logger := plgo.NewNoticeLogger("konfigraf: ", log.Ltime)
+	require(logger, repoName, "Repository name")
+
+	db, err := plgo.Open()
+	if err != nil {
+		logger.Fatalf("Cannot open DB: %s", err)
+	}
+	defer db.Close()
+	database := newProxy(db)
+
+	branches, err := service.GetBranches(database, repoName)
+
+	if err != nil {
+		logger.Fatalf("Error: %s", err)
+	}
+
+	return branches
+}
+
 // Validation method for strings
 func require(l *log.Logger, v string, n string) {
 	if len(v) == 0 {
