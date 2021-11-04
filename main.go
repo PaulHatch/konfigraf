@@ -243,6 +243,28 @@ func ListBranches(repoName string) []string {
 	return branches
 }
 
+// Returns the diff for a file between two branches
+func GetDiff(repoName, file, fromBranch, toBranch string) string {
+	logger := plgo.NewNoticeLogger("konfigraf: ", log.Ltime)
+	require(logger, repoName, "Repository name")
+	require(logger, fromBranch, "From branch")
+	require(logger, toBranch, "To branch")
+
+	db, err := plgo.Open()
+	if err != nil {
+		logger.Fatalf("Cannot open DB: %s", err)
+	}
+	defer db.Close()
+	database := newProxy(db)
+
+	diff, err := service.DiffFile(database, repoName, file, fromBranch, toBranch)
+
+	if err != nil {
+		logger.Fatalf("Error: %s", err)
+	}
+	return diff
+}
+
 // Validation method for strings
 func require(l *log.Logger, v string, n string) {
 	if len(v) == 0 {
